@@ -1,0 +1,279 @@
+MFAD DATATHON CSE1 — SECTION RR_CSE_B · TEAM 9
+ALL REFLECTION ANSWERS — PS03 AND PS04
+================================================================================
+
+Dataset_09 (n = 24 students). Extracted from the pasted answer text.
+
+================================================================================
+PS03 – Attendance Risk Analysis: Reflection Answers
+================================================================================
+
+3. Repeated samples and estimators
+--------------------------------------------------------------------------------
+How do sample size and the CLT change the sampling distribution?
+Simulating 5,000 samples of the exam mean: empirical SE vs theory = 8.07 vs 7.92
+(n = 3), 6.13 vs 6.13 (n = 5),
+4.32 vs 4.34 (n = 10), 3.01 vs 3.07 (n = 20), 2.82 vs 2.80 (n = 24). The
+distribution stays centred on 63.1 (unbiased) but narrows as 1/sqrt(n) and
+becomes more normal (the CLT). Same for the proportion: SE 0.236 (n = 3)
+falling to 0.083 (n = 24), matching sqrt(p(1-p)/n). The CLT does not remove
+the need for independence and does not make an unrepresentative sample
+representative.
+
+Why do the normal MLE variance and unbiased sample variance differ?
+The MLE maximises the likelihood and gives sigma^2 = sum((x - xbar)^2)/n =
+187.94, which is biased low because deviations are measured from xbar (fitted
+to the same data, using up one degree of freedom). Dividing by n-1 gives the
+unbiased s^2 = 196.11; the two differ by the factor (n-1)/n = 0.958, a gap
+that shrinks as n grows. The MLE of mu (63.125) is the sample mean.
+
+Which estimator would you report, considering bias, variance and MSE?
+Normal-model simulation (true sigma^2 = 196.1): n = 5: MLE bias -39.1, MSE
+13,877 vs unbiased bias 0.16, MSE 19,294; n = 10: MLE bias -19.4, MSE 7,388
+vs unbiased MSE 8,657; n = 24: MLE bias -8.3, MSE 3,135 vs unbiased 3,339.
+The MLE trades a little bias for lower variance and lower MSE, so is slightly
+more accurate for point estimation, but s^2 is the one used for t-intervals
+and tests, so I report s^2 (and the sample mean, with bootstrap bias approx
+0.03 and variance 7.86 - about half the variance of the sample median, 16.5).
+
+================================================================================
+4. Uncertainty and the central claim
+--------------------------------------------------------------------------------
+How do confidence level, sample size and variability change interval width?
+Higher confidence widens intervals: exam-mean margins of error are +/- 4.90
+(90%), +/- 5.91 (95%) and +/- 8.02 (99%) with the t critical values 1.714,
+2.069, 2.807 (df = 23). Larger n and smaller SD narrow it (ME prop s/sqrt n).
+The pass-rate 95% intervals are wide: Wald 0.629-0.954 (ME 0.162), Wilson
+0.595-0.908, Clopper-Pearson 0.578-0.929; at 99% Clopper-Pearson is 0.515-0.952.
+Wilson/exact are preferred to Wald with n = 24 and p near 0.8. t is used
+because sigma is unknown; a z-interval (+/- 5.60) is shown only under an
+explicitly assumed known sigma = 14.
+
+What do Type I and Type II errors mean for this specific claim?
+Central claim: attendance is positively associated with passing. H0: mean
+attendance of passers <= failers (equivalently rho = 0); H1: passers attend more
+(one-sided Welch, alpha = 0.05). Passers average 82.95% (n = 19) vs failers
+67.40% (n = 5): t = 6.151, df = 14.92, critical value 1.754, p = 0.00001 ->
+reject H0 (difference 15.6 points, 95% CI 10.16 to 20.94; d = 2.05; Mann-Whitney
+p = 0.001). Test of rho = 0: r = 0.656, t = 4.081, df = 22, critical +/- 2.074,
+p = 0.0005. Type I error: concluding attendance matters when it does not (e.g.
+launching an unneeded attendance campaign). Type II error: missing a real link
+and so failing to support at-risk, low-attendance students. Logistic fit: odds
+of passing multiply by about 13.6 per +5 attendance points, but the 95% CI
+(1.04-177) shows how uncertain this is with only 5 failures.
+
+Do the confidence interval and hypothesis-test decision agree? Explain.
+Yes. For the exam-mean benchmark H0: mu = 60 (two-sided), t = 1.093, critical
++/- 2.069, p = 0.286 -> fail to reject, and 60 lies inside the 95% CI
+(57.21, 69.04). For the attendance difference, the CI for the difference
+(10.16, 20.94) excludes 0, matching the rejection. For the pass-rate benchmark
+H0: p = 0.70 vs H1: p > 0.70, X = 19, exact p = 0.229 (z = 0.98 < 1.645) ->
+fail to reject, and 0.70 is within the interval 0.578-0.929. A two-sided test
+at alpha and a (1-alpha) interval always agree; mixing a one-sided test with a
+two-sided interval can look inconsistent.
+
+================================================================================
+5. Group comparison and conclusion
+--------------------------------------------------------------------------------
+Are ANOVA and chi-square assumptions plausible for these data?
+ANOVA by Section: exam F(2,21) = 0.199, p = 0.821, eta^2 = 0.019 (Section
+means 63.6, 65.1, 60.6; Levene p = 0.977; Kruskal p = 0.903); attendance
+F(2,21) = 0.502, p = 0.612. Normality (residuals approximately normal) and
+equal variance are plausible, independence is questionable. Chi-square:
+Section x Passed has expected counts 1.67 (fail) / 6.33 (pass) per Section -
+3 of 6 cells below 5 - so chi^2 = 2.02 (p = 0.364) is not reliable; use exact
+tests. Attendance group (>=75 vs <75) x Passed: observed 0/16 vs 5/3, expected
+3.33/12.67 and 1.67/6.33; chi^2 = 12.63, p = 0.0004, Fisher exact p = 0.0013,
+V = 0.725. Goodness-of-fit to a 70/30 benchmark: chi^2 = 0.96, p = 0.327.
+
+What is the difference between statistical significance and practical importance here?
+Statistical significance says an association is unlikely to be chance
+(p = 0.0005-0.0013); practical importance concerns size and usefulness. The
+effect sizes here are very large (d = 2.05; V = 0.725; every student with
+attendance >= 75% passed vs 3 of 8 below it), so the finding is both
+significant and potentially important, but with only 5 failures the size is
+imprecise (odds-ratio CI 1.04-177) and the data are synthetic, so effect
+magnitudes should not be taken at face value. Non-significant results (Section
+effect) should not be read as proof of no difference.
+
+What larger or better-designed study would improve power and generalisability?
+Power with 19 passers vs 5 failers (alpha = 0.05) is 0.07 for d = 0.2, 0.16
+for d = 0.5, 0.33 for d = 0.8, 0.63 for d = 1.2 and 0.97 for d = 2.0; the
+pass-rate test (p0 = 0.70 vs true 0.80, n = 24) has power 0.26. About 64
+students per group would give 80% power for d = 0.5. A better design: random
+sample of several hundred students from multiple courses and institutions,
+stratified by Section/programme, with attendance measured over time, prior
+achievement recorded as a covariate (or an intervention randomised) and a
+pre-specified analysis, which would allow adjusted logistic regression and
+causal discussion.
+
+================================================================================
+PS04 – Attendance Threshold Investigation: Reflection Answers
+================================================================================
+Dataset_09 (n = 24 students). Threshold = 75% attendance; groups High (n = 16)
+and Low (n = 8). Random seed 42. Numbers are from SRN_PS04.py.
+
+================================================================================
+1. Comparison groups and sampling frame
+--------------------------------------------------------------------------------
+Are the groups mutually exclusive and appropriately defined?
+Yes. Using a 75% threshold, High (Attendance >= 75) has 16 students and Low (<
+75) has 8; every student falls in exactly one group (no overlap, none missing).
+The cut-off uses the closed-open rule >=75 / <75 so boundary cases are
+unambiguous. Caveats: 75% is a convention, not a data-driven value, so results
+should be checked at other cut-offs; the split is unbalanced (16 vs 8); and
+dichotomising a continuous variable discards information (attendance and exam
+score correlate at r = 0.978). Group means: attendance 85.25 vs 68.62; exam
+70.88 vs 47.62; pass rate 100% (16/16) vs 37.5% (3/8).
+
+Which sampling strategy would reduce the risk of under-representing a group?
+Stratified sampling on the attendance group. With n = 8 from 24 (seed 42), the
+stratified sample kept the High/Low mix at 62.5%/37.5% (population 66.7%/33.3%)
+and gave mean exam 59.6 (population 63.1), pass rate 0.75 (0.79). The simple
+random sample over-represented Low students (75% Low) and gave mean exam 51.8
+and pass rate 0.50. Over 2,000 repeats, a simple random sample of 8 contained
+no Low student 2.2% of the time, stratified 0%; the SD of the sample-mean error
+was 3.97 (SRS), 2.38 (stratified) and 1.87 (cluster by Section). The cluster
+sample (one Section) was close here only because the Sections are internally
+mixed; with few clusters it is generally the least reliable design.
+
+================================================================================
+2. Distribution shape and probabilities
+--------------------------------------------------------------------------------
+Are group distributions similar enough for the planned parametric comparison?
+Mostly. Attendance in both groups is roughly symmetric (skew 0.26 and -0.30),
+Shapiro-Wilk p = 0.398 (High) and 0.721 (Low), no IQR outliers, max |z| =
+1.76; Q-Q plots follow the line. The overall distribution looks normal (Shapiro
+p = 0.626). However the spread differs: SD 6.66 vs 3.42 (Levene p = 0.030),
+which is partly an artefact of cutting a continuous variable. Hence Welch's
+t-test (no equal-variance assumption) is used, with Mann-Whitney as a robustness
+check. Normal model N(79.71, 9.83^2): P(Attendance >= 75) = 0.684 vs observed
+0.667; P(>= 90) = 0.147 vs 0.208. The correlation matrix shows very strong
+associations (Attendance-Exam r = 0.978, covariance 134.6; Study-Exam 0.944;
+Sleep-Exam 0.778). Mardia's skewness test (p = 0.289) and kurtosis (z =
+-1.19) do not reject multivariate normality, but with n = 24 and four variables
+this test has low power, so plausibility only.
+
+What independence and constant-probability assumptions are needed for the binomial model?
+Each of the n = 24 students must be an independent Bernoulli trial with the same
+pass probability p (estimated 19/24 = 0.792). Under Bin(24, 0.792) the expected
+number of passes is 19.0 (SD 1.99) and observed is 19, P(X = 19) = 0.197.
+Checking by group exposes the problem: with a common p, High would be expected
+to have 12.7 passes (observed 16, P(X >= 16) = 0.024) and Low 6.3 (observed 3,
+P(X <= 3) = 0.012). So the constant-p assumption fails - pass probability
+clearly depends on attendance - and students in the same Section may not be
+independent. The binomial fits overall counts only because p was estimated from
+the same data.
+
+How should an unusually high or low observation affect interpretation?
+No observation was flagged (no IQR outliers, all |z| < 2), so nothing was
+removed. In general an extreme value should be checked for data-entry error
+first, then reported with and without it; means, SDs and Pearson correlation are
+sensitive to it, whereas medians, IQR, Spearman and Mann-Whitney are robust.
+With n = 8 in the Low group a single extreme point would move that group mean
+noticeably.
+
+================================================================================
+3. Sampling variability and estimator quality
+--------------------------------------------------------------------------------
+Why might estimates from small groups fluctuate more than estimates from the full sample?
+Because SE = sigma/sqrt(n) (and sqrt(p(1-p)/n) for a proportion). Simulating
+5,000 resamples of n = 8 gave an empirical SE of the mean exam score of 4.79
+(theory 4.85) overall, matching theory closely at every n (e.g. overall n = 3:
+8.07 vs 7.92; n = 16: 3.47 vs 3.43). Group-specific bootstrap SEs of the mean
+were 2.44 for High (n = 16) and 1.53 for Low (n = 8; Low has the smaller SD,
+4.6 vs 9.9, so its SE is smaller despite the smaller n). The pass-rate SE for
+samples of 3 is 0.236 versus 0.102 at n = 16 - small samples fluctuate much
+more, and the Low group's pass rate (3/8) is especially imprecise.
+
+What does the CLT tell you, and what does it not guarantee?
+The CLT says the sampling distribution of the mean approaches N(mu, sigma^2/n)
+as n grows, even for non-normal data, so the t and z machinery is justified for
+means. It does not guarantee normality at n = 8 or 16 for skewed or heavy-tailed
+data, does not apply to a binary variable with a pass rate near 0 or 1 at small
+n (High group pass rate is 100%, so its SE is 0 - the normal approximation is
+useless there), does not repair bias from a non-random or non-independent
+sample, and does not make the 24 synthetic records representative of any real
+population.
+
+How does the bias-variance trade-off affect the estimator you select?
+Point estimates: mean exam = 63.125, pass rate = 0.792. Normal MLE: mu_hat =
+63.125, sigma_hat^2 = 187.94 (sigma_hat = 13.71), versus unbiased s^2 =
+196.11 (ratio (n-1)/n = 0.958). The MLE variance is biased low (bootstrap bias
+approx -8.3 = -sigma^2/n) but has smaller variance (1,344 vs 1,464), giving
+smaller MSE (1,413 vs 1,464); the unbiased s^2 has bias approx 0 (simulation
+noise only). I report the unbiased s^2 for inference (CIs and t-tests need it,
+and the MLE's advantage vanishes as n grows), and use the sample mean
+(bootstrap bias approx 0, MSE 7.9) as the location estimator.
+
+================================================================================
+4. Intervals and tests
+--------------------------------------------------------------------------------
+How does overlap or non-overlap of intervals relate to, but not replace, a formal test?
+95% t-intervals: High 70.88 +/- 5.29 (65.58, 76.17); Low 47.62 +/- 3.84
+(43.78, 51.47); All 63.12 +/- 5.91. The intervals do not overlap, which is
+consistent with a significant difference, but overlap is not the test: the
+correct comparison uses the SE of the difference (Welch 95% CI for the
+difference: 17.10 to 29.40). Two intervals can overlap slightly and still give
+a significant difference, so the formal test is required. Interval widths: 99%
+(+/- 7.32 for High) > 95% (5.29) > 90% (4.35); the smaller Low group has a
+wider t multiplier (df = 7). A z-interval needs a known population sigma; since
+sigma is unknown, t is used (plugging s into z gives ME 4.87 vs t's 5.29 -
+too narrow).
+
+What practical meaning does the test decision have for the groups?
+H0: mu_High = mu_Low; H1: mu_High != mu_Low (alpha = 0.05, Welch). Difference
+= 23.25 points, t = 7.835, df = 21.97, critical value +/- 2.074, p < 0.0001 ->
+reject H0 (Mann-Whitney p = 0.0001 agrees; Cohen d = 2.70). Students at or
+above 75% attendance scored about 23 points higher on average and all passed,
+versus 37.5% passing below 75%. This is an association in observational data,
+not proof that raising attendance would raise scores (motivation, ability and
+study time are confounded). The benchmark check H0: mu = 60 gave t = 1.093,
+p = 0.286 (fail to reject).
+
+Describe a Type I and Type II error in this comparison.
+Type I: concluding that high- and low-attendance students differ in exam
+performance when in truth they do not (probability alpha = 0.05) - the school
+might wrongly build an attendance policy around a spurious difference. Type II:
+concluding there is no difference when there really is one - missed students
+at risk. With a very large observed effect (d = 2.7) a Type II error is
+unlikely here, but for a small true effect it is very likely given 16 vs 8
+students (see power below).
+
+================================================================================
+5. Group structure and power
+--------------------------------------------------------------------------------
+Why is ANOVA preferable to repeatedly running many pairwise t-tests?
+Each extra t-test adds a chance of a false positive; with k groups there are
+k(k-1)/2 tests and the family-wise error rate rises (three tests at 0.05 gives
+about 14%). One-way ANOVA tests all means together at a single alpha and uses
+pooled variance. Results: exam by attendance band (<70, 70-84, >=85; n = 5,
+11, 8): F(2,21) = 52.58, p < 0.001, eta^2 = 0.83 (Levene p = 0.442; residual
+Shapiro p = 0.415; Kruskal p < 0.001); by Section: F(2,21) = 0.199, p = 0.821,
+eta^2 = 0.02, i.e. no Section effect. Assumptions: independence, approximately
+normal residuals, equal variances. A significant ANOVA would be followed by a
+corrected post-hoc test (e.g. Tukey).
+
+Are chi-square expected counts adequate? If not, what alternative or caution is needed?
+No. For attendance group x Passed the expected counts are High: 3.33 fail /
+12.67 pass; Low: 1.67 / 6.33 - two of four cells are below 5 (observed: High
+0 fail / 16 pass; Low 5 / 3). The chi-square test gives chi^2 = 12.63, df = 1,
+p = 0.0004 (Cramer's V = 0.725), but because of the low expected counts the
+exact test is preferred: Fisher exact p = 0.0013 (Yates p = 0.0025), same
+conclusion. Section x Passed has minimum expected count 1.67 (3 of 6 cells <
+5), chi^2 = 2.02, p = 0.364, so it is unreliable. Goodness-of-fit of the pass
+rate to a 70/30 benchmark: observed 19/5 vs expected 16.8/7.2, chi^2 = 0.96,
+p = 0.327 (not significantly different; expected counts are adequate). The
+70/30 benchmark is an assumed standard, not a fact in the data.
+
+Would the study have enough power to detect a small group difference?
+No. Power rises with sample size, effect size and alpha, and falls with
+variability. With 16 vs 8 students and alpha = 0.05, power is only 0.07 for
+d = 0.2, 0.20 for d = 0.5, 0.42 for d = 0.8 and 0.75 for d = 1.2; the minimum
+effect detectable with 80% power is d approx 1.27. About 394 students per
+group would be needed for d = 0.2. The observed effect (d = 2.7) is huge, so
+detecting it is not in doubt, but a small effect would be missed. Cautious
+conclusion: in these 24 synthetic records, students attending >= 75% had much
+higher exam scores and pass rates; the evidence is strong for association, but
+generalisation, causation and small-effect claims are not supported (small n,
+unbalanced groups, one study session, a synthetic dataset).
