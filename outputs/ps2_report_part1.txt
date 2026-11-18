@@ -1,0 +1,50 @@
+MFAD DATATHON CSE1 — SECTION RR_CSE_B · TEAM 9
+PS04 · PROBLEM STATEMENT 2 · ATTENDANCE THRESHOLD INVESTIGATION
+Dataset: Dataset_09.csv (24 students, no missing values)
+Chosen attendance threshold: 79.0% (median).
+Scenario: Do students above and below a chosen attendance threshold
+differ in academic outcomes?
+
+
+========================================================================
+SUB-TASK 1 — Map the comparison groups and sampling frame
+========================================================================
+
+1.1 Study design definitions
+  • Population: students whose attendance and academic outcomes follow the
+    same process as these records.
+  • Observational unit: one student.
+  • Explanatory variable: attendance group (High vs Low, split at median).
+  • Response variables: Exam_Score_Percent, Passed.
+  • Sample: all 24 rows.
+
+1.2 Summaries by attendance group:
+                             n  mean_att  mean_exam  sd_exam  pass_rate  n_passed
+AttGroup                                                                         
+High attendance (>=median)  14      86.5     72.786    9.074        1.0        14
+Low attendance (<median)    10      70.2     49.600    5.816        0.5         5
+
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS2/../outputs/figures/ps2_01_fig.png
+1.3 Reproducible samples vs full dataset (group means):
+                    sample  n  Low exam  High exam
+               Full (n=24) 24     49.60      72.79
+                   SRS n=8  8     50.75      77.50
+Stratified by AttGroup n=6  6     50.67      74.33
+               Cluster n=8  8     49.33      72.20
+
+  Interpretation: stratified sampling by the grouping variable (AttGroup)
+  guarantees both attendance groups are represented, reducing the risk of
+  under-representing either group — best for this comparison question.
+
+REFLECTION Q1 — Are the groups mutually exclusive and appropriately defined?
+  Yes: High (>=median) and Low (<median) attendance are mutually exclusive and
+  exhaustive (every student is in exactly one group). Using the median as the
+  threshold gives balanced group sizes (14 high, 10 low here), which is good
+  for power. A fixed benchmark (e.g., 75%) might be more interpretable but
+  could yield unbalanced groups.
+
+REFLECTION Q2 — Which sampling strategy reduces the risk of under-representing a group?
+  Stratified random sampling by the grouping variable (attendance group).
+  It forces proportional (or equal) inclusion of both High and Low groups,
+  unlike SRS which could by chance miss a group, and unlike cluster sampling
+  which could select only one section.

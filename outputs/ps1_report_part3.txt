@@ -1,0 +1,218 @@
+MFAD DATATHON CSE1 — SECTION RR_CSE_B · TEAM 9
+PS03 · PROBLEM STATEMENT 1 · ATTENDANCE RISK ANALYSIS
+Dataset: Dataset_09.csv (24 students, 10 columns, no missing values)
+Scenario: How strongly is attendance associated with passing, and what
+uncertainty surrounds the estimated pass rate?
+
+
+========================================================================
+SUB-TASK 1 — Build the student-performance evidence base
+========================================================================
+
+1.1 Study design definitions
+  • Target population: undergraduate students (sections A/B/C) whose attendance,
+    study hours, sleep and exam performance follow the same data-generating
+    process as these 24 synthetic records — i.e., a small college cohort where
+    attendance is the key risk factor for passing.
+  • Observational unit: one student record (one row).
+  • Sample: all 24 rows of Dataset_09.csv (treated as the available sample).
+  • Parameters of interest:
+      – population mean exam score (mu_exam)
+      – population pass proportion (pi_pass)
+      – association between Attendance_Percent and Passed (risk difference / OR)
+  • Statistics used to estimate them: sample mean, sample proportion, group
+    comparisons, correlation, confidence intervals, t-tests, chi-square.
+1.2 Descriptive summaries (numeric variables):
+                       count    mean     std   min     25%    50%     75%   max
+Study_Hours_Per_Day     24.0   3.383   1.196   1.2   2.375   3.35   4.425   5.3
+Sleep_Hours_Per_Night   24.0   7.042   0.959   5.4   6.425   7.05   7.650   8.8
+Exam_Score_Percent      24.0  63.125  14.004  42.0  52.000  62.50  76.250  87.0
+Attendance_Percent      24.0  79.708   9.827  63.0  71.750  79.00  87.500  97.0
+
+1.3 Categorical summaries:
+  Section:
+Section
+A    8
+B    8
+C    8
+
+  Sampling_Method:
+Sampling_Method
+Random        8
+Stratified    8
+Cluster       8
+
+  Study_Session:
+Study_Session
+Morning    24
+
+  Passed:
+Passed
+True     19
+False     5
+
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS1/../outputs/figures/ps1_01_fig.png
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS1/../outputs/figures/ps1_02_fig.png
+1.4 Reproducible samples vs full 24-row dataset (means):
+        sample  n  Study_Hours_Per_Day  Sleep_Hours_Per_Night  Exam_Score_Percent  Attendance_Percent
+   Full (n=24) 24                 3.38                   7.04               63.12               79.71
+       SRS n=8  8                 3.16                   6.91               59.00               76.25
+Stratified n=9  9                 2.84                   6.74               56.22               75.56
+   Cluster n=8  8                 3.36                   7.08               60.62               77.38
+
+  Interpretation: stratified sampling (by Section) reproduces the full-
+  dataset means most closely; cluster sampling (one whole section) is the
+  least representative because sections differ in performance. SRS sits
+  in between but with n=8 it is noisy. With only 24 rows, stratified by
+  Section is the design that best guards against under-representing a section.
+
+REFLECTION Q1 — Which population can these records represent, and what
+cannot be generalised?
+  Reasonably represent: a small, homogeneous undergraduate cohort (three
+  sections, morning study session) in which attendance, study hours, sleep
+  and exam scores co-vary as they do here. The findings generalise to similar
+  college populations with the same delivery mode and assessment structure.
+  Cannot generalise to: evening/part-time students, large lecture cohorts,
+  different disciplines, online-only delivery, or any population where the
+  attendance–performance relationship differs. N=24 is too small for precise
+  estimates, and the data are synthetic, so effect sizes should not be treated
+  as population facts.
+
+REFLECTION Q2 — Which sampling design best fits this question, and what
+bias could remain?
+  Best design: stratified random sampling by Section (the grouping variable),
+  because sections differ in mean exam score and attendance; stratification
+  guarantees each section is represented in proportion to its size and
+  reduces sampling variability of the attendance–passing association.
+  Remaining bias: (1) small-sample bias (n=24) — estimates are noisy;
+  (2) all students are Morning session → session bias;
+  (3) synthetic data → may not reflect real-world behaviour;
+  (4) attendance measured as a single percentage → misclassification risk;
+  (5) non-response/self-selection not modelled.
+
+========================================================================
+SUB-TASK 2 — Model the observed pattern with probability
+========================================================================
+
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS1/../outputs/figures/ps1_03_fig.png
+2.1 Exam_Score_Percent distribution checks:
+  mean=63.12, sd=14.00, Shapiro-Wilk stat=0.953, p=0.319
+  z-scores (|z|>2 flagged):
+  IQR outlier fence: [15.6, 112.6] -> outliers: []
+  Normal model defensible? YES (Shapiro p > 0.05, no extreme outliers)
+
+2.2 Scenario-specific normal probability (normal model fit):
+  P(Exam < 70) ≈ 0.688   P(Exam >= 70) ≈ 0.312
+  Empirical:   P(Exam < 70) = 0.708   P(Exam >= 70) = 0.292
+
+2.3 Binomial model for Passing (n=24, pi-hat = pass proportion):
+  Observed passes: 19/24  pi-hat = 0.792
+  Model-based P(X >= 19) with p=pi-hat: 0.617
+  Empirical proportion passed: 0.792
+  Model-based P(X = 19): 0.1970
+
+2.4 Correlation matrix (numeric variables):
+                       Study_Hours_Per_Day  Sleep_Hours_Per_Night  Exam_Score_Percent  Attendance_Percent
+Study_Hours_Per_Day                  1.000                  0.798               0.944               0.913
+Sleep_Hours_Per_Night                0.798                  1.000               0.778               0.775
+Exam_Score_Percent                   0.944                  0.778               1.000               0.978
+Attendance_Percent                   0.913                  0.775               0.978               1.000
+
+  Key correlations with passing: computed point-biserial-style below.
+  corr(Study_Hours_Per_Day, Passed) = 0.676
+  corr(Sleep_Hours_Per_Night, Passed) = 0.635
+  corr(Attendance_Percent, Passed) = 0.656
+
+REFLECTION Q3 — What graphical evidence supports/challenges the distributional assumptions?
+  Histogram/boxplot: no severe skew; one low outlier (STU001, score 42) and
+  one high (STU016, score 87) sit within/near the IQR fence.
+  Q-Q plot: points close to the 45-degree line support approximate normality.
+  Shapiro-Wilk: supports normality (p > 0.05). The small n (24) limits power to detect mild non-normality, so the normal
+  model is defensible as a working approximation but not as a fact.
+
+REFLECTION Q4 — What assumptions make the binomial calculation valid, and how realistic are they?
+  (1) Fixed n (24 students) — satisfied.
+  (2) Constant pass probability pi for every student — unrealistic: pass
+      probability clearly depends on attendance/study hours.
+  (3) Independent outcomes — plausible if students work independently, but
+      shared section/instructor effects could induce dependence.
+  (4) Binary outcome (pass/fail) — satisfied.
+  Verdict: the binomial is a reasonable first approximation but the constant-
+  pi assumption is violated because attendance predicts passing.
+
+REFLECTION Q5 — Does correlation establish that one variable causes another? Why not?
+  No. Correlation measures linear association only. A third variable (e.g.,
+  motivation, prior ability, section/instructor) could drive both attendance
+  and exam score (confounding). With n=24 and an observational (not
+  randomised) design, causality cannot be inferred. A randomised experiment
+  assigning attendance support would be needed to claim causation.
+
+========================================================================
+SUB-TASK 3 — Simulate repeated samples and estimate parameters
+========================================================================
+
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS1/../outputs/figures/ps1_04_fig.png
+3.1 Sampling distribution of mean exam score:
+     n  sim_mean    sim_SE   theo_SE  pop_mean
+     5     63.17     6.255     6.263     63.12
+    10     63.05     4.361     4.428     63.12
+    20     63.22     3.097     3.131     63.12
+
+  Pattern: as n grows, simulated SE approaches theoretical SE (sigma/sqrt n),
+  and the distribution tightens around the population mean — the CLT in action.
+3.2 Sampling distribution of pass proportion:
+     n  sim_mean    sim_SE   theo_SE  pop_prop
+     5     0.791     0.184     0.182     0.792
+    10     0.791     0.129     0.128     0.792
+    20     0.790     0.093     0.091     0.792
+
+3.3 Bootstrap for sample mean (n_boots=2000):
+  point_estimate: 63.125
+  bootstrap_mean: 63.09889583333333
+  bootstrap_var: 7.725164661757963
+  bootstrap_se: 2.779418043720297
+  bias_estimate: -0.026104166666669926
+  mse_estimate: 7.725846089275324
+  n_boots: 2000
+  n: 24
+
+3.4 Bootstrap for pass proportion:
+  point_estimate: 0.7916666666666666
+  bootstrap_mean: 0.7907083333333332
+  bootstrap_var: 0.0069192078678228
+  bootstrap_se: 0.0831817760559535
+  bias_estimate: -0.0009583333333333943
+  mse_estimate: 0.006920126270600578
+  n_boots: 2000
+  n: 24
+
+3.5 Normal MLE vs unbiased sample variance (Exam_Score_Percent):
+  MLE mean = 63.125
+  MLE variance (divides by n) = 187.943
+  Unbiased variance (divides by n-1) = 196.114
+  Ratio MLE/unbiased = 0.9583 (= (n-1)/n = 0.9583)
+  SE of mean (using MLE var) = 2.798
+
+REFLECTION Q6 — How do sample size and the CLT change the sampling distribution?
+  As n increases: (1) the sampling distribution of the mean becomes narrower
+  (SE = sigma/sqrt n shrinks); (2) its shape approaches normality regardless
+  of the population shape (CLT); (3) simulated SE converges to theoretical
+  SE. With n=24 here, the normal approximation is reasonable but not exact;
+  small n gives wide intervals and low power.
+
+REFLECTION Q7 — Why do the normal MLE variance and unbiased sample variance differ?
+  MLE variance divides by n; unbiased sample variance divides by n-1.
+  Dividing by n under-estimates sigma^2 because the sample mean (used in
+  the formula) is itself estimated from the same data and sits closer to
+  the observations than the true mean would. The n-1 correction (Bessel's
+  correction) removes this downward bias. Here ratio = (n-1)/n = 23/24 ≈
+  0.9583, so MLE variance is ~4.2% smaller.
+
+REFLECTION Q8 — Which estimator would you report, considering bias, variance and MSE?
+  Report the unbiased sample variance (divides by n-1) together with the
+  sample mean. Rationale: it is unbiased for sigma^2; its variance is only
+  marginally larger than the MLE's; and its MSE (bias^2 + variance) is
+  competitive because the MLE's bias, though small, is non-zero. For the
+  mean itself, the sample mean is unbiased, consistent, and has the lowest
+  variance among unbiased estimators (Gauss-Markov / MLE), so report the
+  sample mean with its bootstrap SE.

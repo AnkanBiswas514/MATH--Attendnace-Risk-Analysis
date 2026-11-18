@@ -1,0 +1,141 @@
+MFAD DATATHON CSE1 — SECTION RR_CSE_B · TEAM 9
+PS04 · PROBLEM STATEMENT 2 · ATTENDANCE THRESHOLD INVESTIGATION
+Dataset: Dataset_09.csv (24 students, no missing values)
+Chosen attendance threshold: 79.0% (median).
+Scenario: Do students above and below a chosen attendance threshold
+differ in academic outcomes?
+
+
+========================================================================
+SUB-TASK 1 — Map the comparison groups and sampling frame
+========================================================================
+
+1.1 Study design definitions
+  • Population: students whose attendance and academic outcomes follow the
+    same process as these records.
+  • Observational unit: one student.
+  • Explanatory variable: attendance group (High vs Low, split at median).
+  • Response variables: Exam_Score_Percent, Passed.
+  • Sample: all 24 rows.
+
+1.2 Summaries by attendance group:
+                             n  mean_att  mean_exam  sd_exam  pass_rate  n_passed
+AttGroup                                                                         
+High attendance (>=median)  14      86.5     72.786    9.074        1.0        14
+Low attendance (<median)    10      70.2     49.600    5.816        0.5         5
+
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS2/../outputs/figures/ps2_01_fig.png
+1.3 Reproducible samples vs full dataset (group means):
+                    sample  n  Low exam  High exam
+               Full (n=24) 24     49.60      72.79
+                   SRS n=8  8     50.75      77.50
+Stratified by AttGroup n=6  6     50.67      74.33
+               Cluster n=8  8     49.33      72.20
+
+  Interpretation: stratified sampling by the grouping variable (AttGroup)
+  guarantees both attendance groups are represented, reducing the risk of
+  under-representing either group — best for this comparison question.
+
+REFLECTION Q1 — Are the groups mutually exclusive and appropriately defined?
+  Yes: High (>=median) and Low (<median) attendance are mutually exclusive and
+  exhaustive (every student is in exactly one group). Using the median as the
+  threshold gives balanced group sizes (14 high, 10 low here), which is good
+  for power. A fixed benchmark (e.g., 75%) might be more interpretable but
+  could yield unbalanced groups.
+
+REFLECTION Q2 — Which sampling strategy reduces the risk of under-representing a group?
+  Stratified random sampling by the grouping variable (attendance group).
+  It forces proportional (or equal) inclusion of both High and Low groups,
+  unlike SRS which could by chance miss a group, and unlike cluster sampling
+  which could select only one section.
+
+========================================================================
+SUB-TASK 2 — Check distribution shape and categorical probabilities
+========================================================================
+
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS2/../outputs/figures/ps2_02_fig.png
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS2/../outputs/figures/ps2_03_fig.png
+2.1 Distribution checks per group:
+  Low attendance (<median): n=10, mean=49.6, sd=5.8, Shapiro p=0.448, outliers=[]
+  High attendance (>=median): n=14, mean=72.8, sd=9.1, Shapiro p=0.307, outliers=[]
+
+2.2 Normal-model probabilities (where defensible):
+  P(Exam < 70): normal=0.688, empirical=0.708
+  P(Exam < 80): normal=0.886, empirical=0.875
+
+2.3 Binomial model for Passing (n=24, pi-hat=0.792):
+  Observed passes: 19/24
+  Model P(X = 19) = 0.1970
+  Model P(X >= 19) = 0.617
+
+2.4 Correlation matrix:
+                       Study_Hours_Per_Day  Sleep_Hours_Per_Night  Exam_Score_Percent  Attendance_Percent
+Study_Hours_Per_Day                  1.000                  0.798               0.944               0.913
+Sleep_Hours_Per_Night                0.798                  1.000               0.778               0.775
+Exam_Score_Percent                   0.944                  0.778               1.000               0.978
+Attendance_Percent                   0.913                  0.775               0.978               1.000
+
+  Multivariate-normal plausibility: with n=24 this cannot be firmly assessed;
+  pairwise scatter/Q-Q suggest approximate linearity but small n limits it.
+
+REFLECTION Q3 — Are group distributions similar enough for the planned parametric comparison?
+  Both groups look roughly unimodal; Shapiro-Wilk p-values above do not reject
+  normality within groups. Variances: check homogeneity before pooling.
+  With n=10 and n=14, parametric tests are a reasonable working approximation
+  but results should be confirmed with non-parametric checks given the small n.
+
+REFLECTION Q4 — What independence and constant-probability assumptions are needed for the binomial model?
+  (1) Fixed n — satisfied.
+  (2) Constant pass probability pi for every student — violated: attendance
+  group strongly predicts passing.
+  (3) Independent outcomes — plausible but shared section effects could induce
+  dependence. The binomial is therefore a rough approximation only.
+
+REFLECTION Q5 — How should an unusually high or low observation affect interpretation?
+  An extreme outlier can pull the mean and inflate the SD, distorting t-tests
+  and confidence intervals. With n=24, one outlier has substantial leverage.
+  Always report median alongside mean, and run sensitivity checks with/without
+  flagged outliers (e.g., the low scorer STU001).
+
+========================================================================
+SUB-TASK 3 — Measure sampling variability and estimator quality
+========================================================================
+
+3.1 Sampling distribution of mean exam score (overall data):
+  n= 5: sim_mean=63.08, sim_SE=6.214, theo_SE=6.263
+  n=10: sim_mean=63.19, sim_SE=4.297, theo_SE=4.428
+  n=20: sim_mean=63.21, sim_SE=3.088, theo_SE=3.131
+  CLT: as n grows, simulated SE -> sigma/sqrt(n) and the distribution narrows.
+
+3.2 Sampling distributions by attendance group:
+  Low n=5: sim_mean=49.59, sim_SE=2.509, theo_SE=2.601 (group n=10)
+  Low n=10: sim_mean=49.64, sim_SE=1.726, theo_SE=1.839 (group n=10)
+  High n=5: sim_mean=72.69, sim_SE=3.873, theo_SE=4.058 (group n=14)
+  High n=10: sim_mean=72.92, sim_SE=2.756, theo_SE=2.869 (group n=14)
+
+3.3 Bootstrap bias/variance/MSE of the mean:
+  Overall: point=63.12, boot_mean=63.14, boot_SE=2.774, bias=0.013, MSE=7.698
+  High att: point=72.79, boot_mean=72.80, boot_SE=2.354, bias=0.011, MSE=5.541
+  Low att: point=49.60, boot_mean=49.56, boot_SE=1.715, bias=-0.043, MSE=2.943
+
+3.4 Normal MLE vs unbiased sample variance (Exam_Score_Percent):
+  MLE mean=63.125, MLE var(÷n)=187.943, unbiased var(÷n-1)=196.114, ratio=0.9583
+
+REFLECTION Q6 — Why might estimates from small groups fluctuate more than estimates from the full sample?
+  SE = sigma/sqrt(n): smaller n -> larger SE -> wider sampling distribution ->
+  more fluctuation. The low-attendance group (n=10) will have noisier mean/
+  pass-rate estimates than the full sample (n=24). Small-group estimates are
+  less reliable; confidence intervals will be wider.
+
+REFLECTION Q7 — What does the CLT tell you, and what does it not guarantee for this dataset?
+  The CLT says the sampling distribution of the mean approaches normality as
+  n grows, regardless of population shape, and SE shrinks as sigma/sqrt(n).
+  It does NOT guarantee normality at n=24 (small n), nor does it fix bias,
+  outliers, or dependence. With n=24 the approximation is tentative.
+
+REFLECTION Q8 — How does the bias-variance trade-off affect the estimator you select?
+  The sample mean is unbiased and efficient (lowest variance among unbiased
+  estimators under normal theory) — report it. For variance, the unbiased
+  sample variance (÷n-1) trades a tiny variance increase to remove the MLE's
+  downward bias; its MSE is competitive. Prefer unbiased estimators here
+  because n is small and bias is more damaging than a small variance rise.

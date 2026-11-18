@@ -1,0 +1,91 @@
+MFAD DATATHON CSE1 — SECTION RR_CSE_B · TEAM 9
+PS03 · PROBLEM STATEMENT 1 · ATTENDANCE RISK ANALYSIS
+Dataset: Dataset_09.csv (24 students, 10 columns, no missing values)
+Scenario: How strongly is attendance associated with passing, and what
+uncertainty surrounds the estimated pass rate?
+
+
+========================================================================
+SUB-TASK 1 — Build the student-performance evidence base
+========================================================================
+
+1.1 Study design definitions
+  • Target population: undergraduate students (sections A/B/C) whose attendance,
+    study hours, sleep and exam performance follow the same data-generating
+    process as these 24 synthetic records — i.e., a small college cohort where
+    attendance is the key risk factor for passing.
+  • Observational unit: one student record (one row).
+  • Sample: all 24 rows of Dataset_09.csv (treated as the available sample).
+  • Parameters of interest:
+      – population mean exam score (mu_exam)
+      – population pass proportion (pi_pass)
+      – association between Attendance_Percent and Passed (risk difference / OR)
+  • Statistics used to estimate them: sample mean, sample proportion, group
+    comparisons, correlation, confidence intervals, t-tests, chi-square.
+1.2 Descriptive summaries (numeric variables):
+                       count    mean     std   min     25%    50%     75%   max
+Study_Hours_Per_Day     24.0   3.383   1.196   1.2   2.375   3.35   4.425   5.3
+Sleep_Hours_Per_Night   24.0   7.042   0.959   5.4   6.425   7.05   7.650   8.8
+Exam_Score_Percent      24.0  63.125  14.004  42.0  52.000  62.50  76.250  87.0
+Attendance_Percent      24.0  79.708   9.827  63.0  71.750  79.00  87.500  97.0
+
+1.3 Categorical summaries:
+  Section:
+Section
+A    8
+B    8
+C    8
+
+  Sampling_Method:
+Sampling_Method
+Random        8
+Stratified    8
+Cluster       8
+
+  Study_Session:
+Study_Session
+Morning    24
+
+  Passed:
+Passed
+True     19
+False     5
+
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS1/../outputs/figures/ps1_01_fig.png
+  Figure saved: /Users/hellbound666/Documents/DATATHON/PS1/../outputs/figures/ps1_02_fig.png
+1.4 Reproducible samples vs full 24-row dataset (means):
+        sample  n  Study_Hours_Per_Day  Sleep_Hours_Per_Night  Exam_Score_Percent  Attendance_Percent
+   Full (n=24) 24                 3.38                   7.04               63.12               79.71
+       SRS n=8  8                 3.16                   6.91               59.00               76.25
+Stratified n=9  9                 2.84                   6.74               56.22               75.56
+   Cluster n=8  8                 3.36                   7.08               60.62               77.38
+
+  Interpretation: stratified sampling (by Section) reproduces the full-
+  dataset means most closely; cluster sampling (one whole section) is the
+  least representative because sections differ in performance. SRS sits
+  in between but with n=8 it is noisy. With only 24 rows, stratified by
+  Section is the design that best guards against under-representing a section.
+
+REFLECTION Q1 — Which population can these records represent, and what
+cannot be generalised?
+  Reasonably represent: a small, homogeneous undergraduate cohort (three
+  sections, morning study session) in which attendance, study hours, sleep
+  and exam scores co-vary as they do here. The findings generalise to similar
+  college populations with the same delivery mode and assessment structure.
+  Cannot generalise to: evening/part-time students, large lecture cohorts,
+  different disciplines, online-only delivery, or any population where the
+  attendance–performance relationship differs. N=24 is too small for precise
+  estimates, and the data are synthetic, so effect sizes should not be treated
+  as population facts.
+
+REFLECTION Q2 — Which sampling design best fits this question, and what
+bias could remain?
+  Best design: stratified random sampling by Section (the grouping variable),
+  because sections differ in mean exam score and attendance; stratification
+  guarantees each section is represented in proportion to its size and
+  reduces sampling variability of the attendance–passing association.
+  Remaining bias: (1) small-sample bias (n=24) — estimates are noisy;
+  (2) all students are Morning session → session bias;
+  (3) synthetic data → may not reflect real-world behaviour;
+  (4) attendance measured as a single percentage → misclassification risk;
+  (5) non-response/self-selection not modelled.

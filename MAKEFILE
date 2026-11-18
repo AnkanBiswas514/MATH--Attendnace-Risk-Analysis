@@ -1,0 +1,30 @@
+# MFAD Datathon CSE1 — Section RR_CSE_B
+# Build / run targets for PS1 and PS2
+
+PYTHON ?= python3
+REPORT_ENGINE ?= $(PYTHON)
+
+.PHONY: all ps1 ps2 clean help
+
+all: ps1 ps2
+
+ps1:
+	@echo "=== Running Problem Statement 1 ==="
+	$(PYTHON) PS1/ps1_solution.py
+
+ps2:
+	@echo "=== Running Problem Statement 2 ==="
+	$(PYTHON) PS2/ps2_solution.py
+
+clean:
+	@echo "Cleaning outputs/"
+	rm -rf outputs/*
+	@mkdir -p outputs
+
+help:
+	@echo "MFAD Datathon CSE1 (RR_CSE_B) targets:"
+	@echo "  make all   - run PS1 and PS2"
+	@echo "  make ps1   - run Problem Statement 1 solution"
+	@echo "  make ps2   - run Problem Statement 2 solution"
+	@echo "  make clean - clear outputs/"
+	@echo "  make help  - show this help"
